@@ -1,0 +1,20 @@
+body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background-color: #f5f7fa; color: #333; margin: 0; padding: 20px; }
+.container { max-width: 1100px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+header { text-align: center; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+.auth-section { margin-bottom: 20px; }
+#api-key { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+.main-layout { display: flex; gap: 20px; height: 500px; margin-bottom: 25px; }
+.panel { flex: 1; display: flex; flex-direction: column; }
+textarea { flex: 1; padding: 15px; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 14px; line-height: 1.5; }
+.display-box { flex: 1; border: 1px solid #ddd; border-radius: 8px; padding: 15px; overflow-y: auto; background: #fafafa; font-size: 14px; }
+.btn-primary { background: #1a73e8; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; margin-top: 10px; font-weight: bold; }
+.follow-up { border-top: 1px solid #eee; padding-top: 20px; }
+.input-group { display: flex; gap: 10px; }
+#suggest-input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 6px; }
+#modify-btn { background: #34a853; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; }
+.btn-outline { background: #f8f9fa; border: 1px solid #ddd; padding: 10px 15px; border-radius: 6px; cursor: pointer; }
+.hidden { display: none; }
+.error-msg { color: #d93025; background: #fce8e6; padding: 10px; margin-top: 10px; border-radius: 4px; }
+.msg-bubble { margin-bottom: 15px; padding: 12px; border-radius: 8px; }
+.user-bubble { background: #e8f0fe; border-left: 4px solid #1a73e8; }
+.ai-bubble { background: #e6f4ea; border-left: 4px solid #34a853; }
