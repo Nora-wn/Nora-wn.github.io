@@ -31,9 +31,9 @@
                         <h3>📖 使用指南</h3>
                         <ol>
                             <li>在右上方输入您的 <strong>API KEY</strong>。</li>
-                            <li>在下方输入框粘贴 <strong>原始笔记</strong> 并发送。</li>
-                            <li>AI 将自动提取摘要、知识点并设计复习题。</li>
-                            <li>您可以直接回复修改建议（如“更简短点”）。</li>
+                            <li>在下方输入框粘贴 <strong>原始课程笔记</strong> 并发送。</li>
+                            <li>系统将自动生成摘要、知识点及复习题。</li>
+                            <li><strong>多轮修改：</strong>您可以继续发送指令，如“改成表格形式”、“更简短些”。</li>
                         </ol>
                     </div>
                 </div>
@@ -41,13 +41,13 @@
 
             <div class="bottom-area">
                 <div id="loading" class="loading-spinner hidden">
-                    <span class="spinner"></span> Qwen 正在深度分析中...
+                    <span class="spinner"></span> 🤖 Qwen 正在分析笔记...
                 </div>
                 
                 <div id="error-banner" class="error-banner hidden"></div>
 
                 <div class="input-container">
-                    <textarea id="user-input" placeholder="输入笔记或修改指令..." rows="1"></textarea>
+                    <textarea id="user-input" placeholder="粘贴笔记或输入修改指令..." rows="1"></textarea>
                     
                     <div class="action-buttons">
                         <button id="clear-btn" class="btn-secondary">清空对话</button>

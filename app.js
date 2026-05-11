@@ -11,25 +11,26 @@ const loading = document.getElementById('loading');
 const errorBanner = document.getElementById('error-banner');
 const historyList = document.getElementById('history-list');
 
-// 发送逻辑
+// 发送按钮逻辑
 document.getElementById('send-btn').onclick = async () => {
     const text = userInput.value.trim();
     const key = apiKeyInput.value.trim();
 
-    // 拦截校验 (要素 2 & 7)
+    // 强校验 API KEY (作业要求 2 & 7)
     if (!key) {
         alert("请输入 API KEY");
         return;
     }
     if (!text) return;
 
+    // 清除错误显示
     errorBanner.classList.add('hidden');
 
-    // 初始化系统提示词 (产品型应用：要求支持后续建议修改)
+    // 初始化对话背景（实现多轮修改的关键）
     if (currentMessages.length === 0) {
         currentMessages.push({ 
             role: "system", 
-            content: "你是一个学习笔记整理专家。请将用户输入的原始笔记整理为：1.核心摘要 2.知识点清单 3.复习自测题。如果用户之后提出修改建议，请基于当前已整理的内容进行调整。" 
+            content: "你是一个专业的笔记整理助手。将内容整理为：1.摘要 2.知识点清单 3.复习自测题。支持基于当前内容进行微调修改。" 
         });
     }
 
@@ -38,6 +39,7 @@ document.getElementById('send-btn').onclick = async () => {
     userInput.value = '';
     userInput.style.height = 'auto';
 
+    // 显示加载状态 (要素 6)
     loading.classList.remove('hidden');
 
     try {
@@ -57,12 +59,13 @@ document.getElementById('send-btn').onclick = async () => {
         currentMessages.push({ role: "assistant", content: aiText });
         renderMsg('ai', aiText);
 
-        // 如果是该次任务的第一轮，自动存入历史侧边栏
+        // 如果是首次输入，存入侧边栏历史
         if (currentMessages.filter(m => m.role === 'user').length === 1) {
             saveToSidebar(text);
         }
     } catch (err) {
-        errorBanner.innerText = "❌ 错误: " + err.message;
+        // 错误提示 (要素 7)
+        errorBanner.innerText = "❌ 运行错误: " + err.message;
         errorBanner.classList.remove('hidden');
     } finally {
         loading.classList.add('hidden');
@@ -97,7 +100,7 @@ function saveToSidebar(titleText) {
     historyList.prepend(item);
 }
 
-// 要素 8：清空对话/重新开始
+// 清空对话 (要素 8)
 document.getElementById('clear-btn').onclick = () => {
     currentMessages = [];
     errorBanner.classList.add('hidden');
@@ -115,7 +118,7 @@ document.getElementById('new-chat-btn').onclick = () => {
     document.getElementById('clear-btn').click();
 };
 
-// 输入框自动增高
+// 文本框自动增高
 userInput.oninput = function() {
     this.style.height = 'auto';
     this.style.height = (this.scrollHeight) + 'px';
