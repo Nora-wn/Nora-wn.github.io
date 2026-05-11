@@ -1,94 +1,110 @@
-const BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-const MODEL_ID = "qwen3.6-plus";
+const API_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+const MODEL = "qwen3.6-plus";
 
-let messages = []; // 用于保存对话历史实现多轮对话
+let currentMessages = []; 
+let chatHistory = []; 
 
+const chatWindow = document.getElementById('chat-window');
+const userInput = document.getElementById('user-input');
 const apiKeyInput = document.getElementById('api-key');
-const noteInput = document.getElementById('note-input');
-const chatDisplay = document.getElementById('chat-display');
-const suggestInput = document.getElementById('suggest-input');
-const loading = document.getElementById('loading-indicator');
-const errorBox = document.getElementById('error-box');
+const historyList = document.getElementById('history-list');
+const loading = document.getElementById('loading');
 
-// 统一 API 请求函数
-async function fetchAIResponse(payload) {
-    const apiKey = apiKeyInput.value.trim();
-    if (!apiKey) throw new Error("⚠️ 请先输入 API Key 再进行操作！");
+document.getElementById('send-btn').onclick = async () => {
+    const text = userInput.value.trim();
+    const key = apiKeyInput.value.trim();
+    
+    // 修改点：如果用户没输入 API KEY，拦截并提示
+    if (!key) {
+        alert("请输入 API KEY");
+        return; 
+    }
+    
+    if (!text) return;
 
-    const response = await fetch(BASE_URL, {
-        method: "POST",
-        headers: {
-            "Authorization": `Bearer ${apiKey}`,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            model: MODEL_ID,
-            messages: payload
-        })
-    });
+    if (currentMessages.length === 0) {
+        currentMessages.push({ 
+            role: "system", 
+            content: "你是一个专业的笔记整理助手。将用户输入整理为摘要、知识点和复习题。支持后续微调修改。" 
+        });
+    }
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || "网络请求失败");
-    return data.choices[0].message.content;
-}
-
-// 渲染对话到页面
-function renderMessage(role, content) {
-    if (chatDisplay.querySelector('.placeholder')) chatDisplay.innerHTML = '';
-    const div = document.createElement('div');
-    div.className = `msg-bubble ${role === 'user' ? 'user-bubble' : 'ai-bubble'}`;
-    div.innerHTML = `<strong>${role === 'user' ? '💡 建议' : '🤖 助手'}:</strong><br>${content.replace(/\n/g, '<br>')}`;
-    chatDisplay.appendChild(div);
-    chatDisplay.scrollTop = chatDisplay.scrollHeight;
-}
-
-// 核心功能 1：初次整理笔记
-document.getElementById('init-btn').onclick = async () => {
-    const note = noteInput.value.trim();
-    if (!note) return alert("请输入内容后再点击生成！");
-
-    // 初始化对话历史，设置 System Prompt
-    messages = [
-        { role: "system", content: "你是一个专业的笔记整理助手。请将用户输入的原始笔记整理为：1.核心摘要 2.知识点罗列 3.重点问题。" },
-        { role: "user", content: `请整理以下笔记：\n${note}` }
-    ];
-
-    chatDisplay.innerHTML = ''; // 清空之前的内容
-    executeAI();
-};
-
-// 核心功能 2：多轮修改建议
-document.getElementById('modify-btn').onclick = async () => {
-    const suggestion = suggestInput.value.trim();
-    if (!suggestion) return;
-
-    messages.push({ role: "user", content: suggestion });
-    renderMessage('user', suggestion);
-    suggestInput.value = ''; // 清空输入框
-    executeAI();
-};
-
-// 执行 AI 调用流程
-async function executeAI() {
+    currentMessages.push({ role: "user", content: text });
+    renderMsg('user', text);
+    userInput.value = '';
+    userInput.style.height = 'auto'; // 发送后重置高度
+    
     loading.classList.remove('hidden');
-    errorBox.classList.add('hidden');
-
     try {
-        const aiReply = await fetchAIResponse(messages);
-        messages.push({ role: "assistant", content: aiReply });
-        renderMessage('assistant', aiReply);
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { 
+                "Authorization": `Bearer ${key}`, 
+                "Content-Type": "application/json" 
+            },
+            body: JSON.stringify({ model: MODEL, messages: currentMessages })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error?.message || "请求失败");
+
+        const aiText = data.choices[0].message.content;
+        currentMessages.push({ role: "assistant", content: aiText });
+        renderMsg('ai', aiText);
+
+        if (currentMessages.filter(m => m.role === 'user').length === 1) {
+            addToHistoryList(text);
+        }
     } catch (err) {
-        errorBox.innerText = err.message;
-        errorBox.classList.remove('hidden');
+        renderMsg('ai', "❌ 错误: " + err.message);
     } finally {
         loading.classList.add('hidden');
     }
+};
+
+function renderMsg(role, content) {
+    if (document.querySelector('.welcome-screen')) chatWindow.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = `msg ${role}-msg`;
+    div.innerHTML = `<strong>${role === 'user' ? '📝 笔记/建议' : '🤖 助手'}</strong><br>${content.replace(/\n/g, '<br>')}`;
+    chatWindow.appendChild(div);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 }
 
-// 功能：清空重置
+function addToHistoryList(firstNote) {
+    const chatID = Date.now();
+    const chatData = { id: chatID, title: firstNote.substring(0, 15) + '...', msgs: [...currentMessages] };
+    chatHistory.push(chatData);
+
+    const item = document.createElement('div');
+    item.className = 'history-item';
+    item.innerText = `📄 ${chatData.title}`;
+    item.onclick = () => {
+        const target = chatHistory.find(c => c.id === chatID);
+        currentMessages = [...target.msgs];
+        chatWindow.innerHTML = '';
+        currentMessages.forEach(m => { if(m.role !== 'system') renderMsg(m.role, m.content); });
+    };
+    historyList.prepend(item);
+}
+
 document.getElementById('clear-btn').onclick = () => {
-    messages = [];
-    chatDisplay.innerHTML = '<p class="placeholder">整理结果将在此处显示...</p>';
-    noteInput.value = '';
-    errorBox.classList.add('hidden');
+    currentMessages = [];
+    userInput.value = '';
+    userInput.style.height = 'auto';
+    chatWindow.innerHTML = `
+        <div class="welcome-screen">
+            <h2>📝 学习笔记整理助手</h2>
+            <p>输入原始笔记开始整理，或输入指令进行修改</p>
+        </div>`;
+};
+
+document.getElementById('new-chat-btn').onclick = () => {
+    document.getElementById('clear-btn').click();
+};
+
+// 自动调整输入框高度
+userInput.oninput = function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
 };

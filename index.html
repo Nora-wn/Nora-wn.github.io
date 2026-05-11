@@ -3,45 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习笔记整理助手 - Qwen3.6</title>
+    <title>学习笔记整理助手</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>📝 学习笔记整理助手</h1>
-            <p>基于 qwen3.6-plus 模型，支持摘要提取、知识点梳理及多轮修改。</p>
-        </header>
+    <div class="app-wrapper">
+        <aside class="sidebar">
+            <button id="new-chat-btn" class="new-chat-btn">+ 新建整理</button>
+            <div class="history-label">历史记录</div>
+            <div id="history-list" class="history-list"></div>
+        </aside>
 
-        <section class="auth-section">
-            <input type="password" id="api-key" placeholder="请输入您的阿里云百炼 API Key (此 Key 不会上传)">
-        </section>
+        <main class="main-content">
+            <header>
+                <div class="api-config">
+                    <label for="api-key">API KEY:</label>
+                    <input type="password" id="api-key" placeholder="在此输入您的百炼 API Key">
+                </div>
+            </header>
 
-        <main class="main-layout">
-            <div class="panel">
-                <h3>原始笔记输入</h3>
-                <textarea id="note-input" placeholder="请粘贴原始课程笔记或文档内容..."></textarea>
-                <button id="init-btn" class="btn-primary">初次整理笔记</button>
+            <div id="chat-window" class="chat-window">
+                <div class="welcome-screen">
+                    <h2>📝 学习笔记整理助手</h2>
+                    <p>输入原始笔记开始整理，或输入指令进行修改</p>
+                </div>
             </div>
 
-            <div class="panel">
-                <h3>整理结果</h3>
-                <div id="chat-display" class="display-box">
-                    <p class="placeholder">整理结果将在此处显示...</p>
+            <div class="input-area">
+                <div id="loading" class="loading hidden">Qwen 正在处理中...</div>
+                <div class="input-container">
+                    <textarea id="user-input" placeholder="输入内容..." rows="1"></textarea>
+                    <div class="action-buttons">
+                        <button id="clear-btn" class="btn-secondary">清空对话</button>
+                        <button id="send-btn" class="btn-primary">发送</button>
+                    </div>
                 </div>
-                <div id="loading-indicator" class="hidden">⏳ 助手正在思考并整理...</div>
-                <div id="error-box" class="error-msg hidden"></div>
             </div>
         </main>
-
-        <section class="follow-up">
-            <h3>多轮优化建议</h3>
-            <div class="input-group">
-                <input type="text" id="suggest-input" placeholder="例如：'把知识点整理成表格'、'再简短一些'...">
-                <button id="modify-btn">提交修改建议</button>
-                <button id="clear-btn" class="btn-outline">清空所有对话</button>
-            </div>
-        </section>
     </div>
     <script src="script.js"></script>
 </body>
