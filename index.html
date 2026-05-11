@@ -3,36 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学习笔记整理助手</title>
+    <title>学习笔记整理助手 - Qwen3.6</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-wrapper">
         <aside class="sidebar">
-            <button id="new-chat-btn" class="new-chat-btn">+ 新建整理</button>
-            <div class="history-label">历史记录</div>
+            <button id="new-chat-btn" class="new-chat-btn">+ 新建整理任务</button>
+            <div class="history-label">对话历史</div>
             <div id="history-list" class="history-list"></div>
         </aside>
 
         <main class="main-content">
-            <header>
+            <header class="top-header">
+                <div class="title-area">
+                    <h1>学习笔记整理助手</h1>
+                </div>
                 <div class="api-config">
                     <label for="api-key">API KEY:</label>
-                    <input type="password" id="api-key" placeholder="在此输入您的百炼 API Key">
+                    <input type="password" id="api-key" placeholder="在此输入阿里云百炼 API Key">
                 </div>
             </header>
 
             <div id="chat-window" class="chat-window">
                 <div class="welcome-screen">
-                    <h2>📝 学习笔记整理助手</h2>
-                    <p>输入原始笔记开始整理，或输入指令进行修改</p>
+                    <div class="instruction-card">
+                        <h3>📖 使用指南</h3>
+                        <ol>
+                            <li>在右上方输入您的 <strong>API KEY</strong>。</li>
+                            <li>在下方输入框粘贴 <strong>原始笔记</strong> 并发送。</li>
+                            <li>AI 将自动提取摘要、知识点并设计复习题。</li>
+                            <li>您可以直接回复修改建议（如“更简短点”）。</li>
+                        </ol>
+                    </div>
                 </div>
             </div>
 
-            <div class="input-area">
-                <div id="loading" class="loading hidden">Qwen 正在处理中...</div>
+            <div class="bottom-area">
+                <div id="loading" class="loading-spinner hidden">
+                    <span class="spinner"></span> Qwen 正在深度分析中...
+                </div>
+                
+                <div id="error-banner" class="error-banner hidden"></div>
+
                 <div class="input-container">
-                    <textarea id="user-input" placeholder="输入内容..." rows="1"></textarea>
+                    <textarea id="user-input" placeholder="输入笔记或修改指令..." rows="1"></textarea>
+                    
                     <div class="action-buttons">
                         <button id="clear-btn" class="btn-secondary">清空对话</button>
                         <button id="send-btn" class="btn-primary">发送</button>
@@ -41,6 +57,6 @@
             </div>
         </main>
     </div>
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
